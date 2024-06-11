@@ -1,18 +1,18 @@
 <?php
 
-
+// page banner logic and html
 
 function pageBanner($args=NULL) {
 
-    if(!$args['title']) {
+    if(!isset($args['title'])) {
         $args['title'] = get_the_title();
     };
 
-    if(!$args['subtitle']) {
+    if(!isset($args['subtitle'])) {
         $args['subtitle'] = get_field('page_banner_subtitile');
     };
 
-    if(!$args['photo']){
+    if(!isset($args['photo'])){
         if(get_field('page_banner_background_image')) {
             $args['photo'] = get_field('page_banner_background_image')['sizes']['pageBanner'];
         } else {
@@ -33,6 +33,11 @@ function pageBanner($args=NULL) {
 </div>
 
 <?php }
+
+
+
+
+
 
 function university_files () {
 
@@ -65,6 +70,9 @@ function university_features () {
 add_action('after_setup_theme','university_features') ;
 
 
+
+
+
 function university_adjust_queries ($query) {
 
     // adjust Event Query
@@ -90,6 +98,12 @@ function university_adjust_queries ($query) {
         $query->set('Posts_per_page',-1);
         $query->set('orderby','title');
         $query->set('order','ASC');
+    }
+
+
+        // adjust campus Query
+    if(!is_admin() AND is_post_type_archive('campus') AND $query->is_main_query()) {
+        $query->set('Posts_per_page',-1);
     }
 
 
