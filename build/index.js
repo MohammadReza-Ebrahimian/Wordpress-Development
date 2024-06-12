@@ -113,7 +113,7 @@ __webpack_require__.r(__webpack_exports__);
 class Search {
   // 1. describe and create/intiate our object
   constructor() {
-    this.resultDiv = jquery__WEBPACK_IMPORTED_MODULE_0___default()('search-overlay__result');
+    this.resultDiv = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#search-overlay__result');
     this.openButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.js-search-trigger');
     this.closeButton = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.search-overlay__close');
     this.searchOverlay = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.search-overlay');
@@ -121,7 +121,7 @@ class Search {
     this.events();
     this.isOverlayOpen = false;
     this.isSpinnerVisible = false;
-    this.prevousvalue;
+    this.previousvalue;
     this.typingTimer;
   }
 
@@ -136,23 +136,28 @@ class Search {
   // 3. methods(function,action..)
 
   typingLogic() {
-    if (this.searchField.val() != this.prevousvalue) {
+    if (this.searchField.val() != this.previousvalue) {
       clearTimeout(this.typingTimer);
-      if (!this.isSpinnerVisible) {
-        this.resultDiv.html('<div class="spinner-loader"></div>');
-        this.isSpinnerVisible = true;
+      if (this.searchField.val()) {
+        if (!this.isSpinnerVisible) {
+          this.resultDiv.html('<div class="spinner-loader"></div>');
+          this.isSpinnerVisible = true;
+        }
+        ;
+        this.typingTimer = setTimeout(this.getResult.bind(this), 1000);
+      } else {
+        this.resultDiv.html('');
+        this.isSpinnerVisible = false;
       }
-      ;
-      this.typingTimer = setTimeout(this.getResult.bind(this), 2000);
     }
-    this.prevousvalue = this.searchField.val();
+    this.previousvalue = this.searchField.val();
   }
   getResult() {
     this.resultDiv.html('kunnnnn');
     this.isSpinnerVisible = false;
   }
   keyPressDispatcher(e) {
-    if (e.keyCode == 83 && !this.isOverlayOpen) {
+    if (e.keyCode == 83 && !this.isOverlayOpen && !jquery__WEBPACK_IMPORTED_MODULE_0___default()('input,textarea').is(':focus')) {
       this.openOverlay();
     }
     if (e.keyCode == 27 && this.isOverlayOpen) {
