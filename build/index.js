@@ -149,12 +149,12 @@ class Search {
     this.previousValue = this.searchField.val();
   }
   getResults() {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default().when(jquery__WEBPACK_IMPORTED_MODULE_0___default().getJSON(universitydata.root_url + "/wp-json/wp/v2/posts?search=" + this.searchField.val()), jquery__WEBPACK_IMPORTED_MODULE_0___default().getJSON(universitydata.root_url + "/wp-json/wp/v2/pages?search=" + this.searchField.val())).then((posts, pages) => {
-      var combinedresult = posts[0].concat(pages[0]);
+    jquery__WEBPACK_IMPORTED_MODULE_0___default().when(jquery__WEBPACK_IMPORTED_MODULE_0___default().getJSON(universitydata.root_url + "/wp-json/wp/v2/posts?search=" + this.searchField.val()), jquery__WEBPACK_IMPORTED_MODULE_0___default().getJSON(universitydata.root_url + "/wp-json/wp/v2/pages?search=" + this.searchField.val()), jquery__WEBPACK_IMPORTED_MODULE_0___default().getJSON(universitydata.root_url + "/wp-json/wp/v2/program?search=" + this.searchField.val())).then((posts, pages, programs) => {
+      var combinedresult = posts[0].concat(pages[0]).concat(programs[0]);
       this.resultsDiv.html(`
                 <h2 class="search-overlay__section-title">General Information</h2>
                 ${posts.length ? '<ul class="link-list min-list">' : "<p>No general information matches that search.</p>"}
-                  ${combinedresult.map(item => `<li><a href="${item.link}">${item.title.rendered}</a></li>`).join("")}
+                  ${combinedresult.map(item => `<li><a href="${item.link}">${item.title.rendered}</a>${item.type == "post" ? ` by ${item.authorName}` : ""}</li>`).join("")}
                 ${combinedresult.length ? "</ul>" : ""}
               `);
       this.isSpinnerVisible = false;

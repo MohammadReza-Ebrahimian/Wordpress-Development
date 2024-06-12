@@ -54,10 +54,15 @@ class Search {
         universitydata.root_url +
           "/wp-json/wp/v2/pages?search=" +
           this.searchField.val()
+      ),
+      $.getJSON(
+        universitydata.root_url +
+          "/wp-json/wp/v2/program?search=" +
+          this.searchField.val()
       )
     ).then(
-      (posts, pages) => {
-        var combinedresult = posts[0].concat(pages[0]);
+      (posts, pages, programs) => {
+        var combinedresult = posts[0].concat(pages[0]).concat(programs[0]);
         this.resultsDiv.html(`
                 <h2 class="search-overlay__section-title">General Information</h2>
                 ${
@@ -68,7 +73,9 @@ class Search {
                   ${combinedresult
                     .map(
                       (item) =>
-                        `<li><a href="${item.link}">${item.title.rendered}</a></li>`
+                        `<li><a href="${item.link}">${item.title.rendered}</a>${
+                          item.type == "post" ? ` by ${item.authorName}` : ""
+                        }</li>`
                     )
                     .join("")}
                 ${combinedresult.length ? "</ul>" : ""}

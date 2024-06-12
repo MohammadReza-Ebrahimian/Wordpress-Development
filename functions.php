@@ -1,5 +1,20 @@
 <?php
 
+require get_theme_file_path( '/include/search-route.php' );
+
+
+
+
+// Add new custom field in Rest API
+
+function university_custon_rest () {
+    register_rest_field( 'post', 'authorName', array( 
+        'get_callback' => function () {return get_the_author();}
+        ));
+        }
+        
+add_action('rest_api_init','university_custon_rest');
+        
 // page banner logic and html
 
 function pageBanner($args=NULL) {
@@ -7,6 +22,7 @@ function pageBanner($args=NULL) {
     if(!isset($args['title'])) {
         $args['title'] = get_the_title();
     };
+
 
     if(!isset($args['subtitle'])) {
         $args['subtitle'] = get_field('page_banner_subtitile');
@@ -38,7 +54,6 @@ function pageBanner($args=NULL) {
 
 
 
-
 function university_files () {
 
     wp_enqueue_script('main-university-js', get_theme_file_uri('/build/index.js'), array('jquery'),'1.0',true);
@@ -50,7 +65,7 @@ function university_files () {
     
     wp_localize_script( 'main-university-js', 'universitydata', array(
         'root_url'=>get_site_url(),
-        
+
     ) );
 
 
