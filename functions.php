@@ -1,5 +1,8 @@
 <?php
 
+
+// Add a custom API route
+
 require get_theme_file_path( '/include/search-route.php' );
 
 
