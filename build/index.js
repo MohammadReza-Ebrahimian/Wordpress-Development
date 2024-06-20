@@ -2173,12 +2173,13 @@ class myNotes {
     this.events();
   }
   events() {
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".delete-note").on("click", this.deleteNote);
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".edit-note").on("click", this.editNote.bind(this));
-    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".update-note").on("click", this.updateNote.bind(this));
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#my-notes").on("click", ".delete-note", this.deleteNote);
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#my-notes").on("click", ".edit-note", this.editNote.bind(this));
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()("#my-notes").on("click", ".update-note", this.updateNote.bind(this));
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".submit-note").on("click", this.createNote.bind(this));
   }
 
-  //Methods will g here
+  //Methods will go here
 
   deleteNote(e) {
     var thisNote = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).parent('li');
@@ -2192,6 +2193,10 @@ class myNotes {
         thisNote.slideUp();
         console.log("congrat");
         console.log(response);
+        // if(response.userNoteCount < 5){
+        //   $("./note-linit-message").removeClass("active");
+
+        // }
       },
       error: response => {
         console.log("sorry");
@@ -2250,6 +2255,45 @@ class myNotes {
     thisNote.find(".note-title-field, .note-body-field").attr("readonly", "readonly").removeClass("note-active-field");
     thisNote.find(".update-note").removeClass("update-note--visible");
     thisNote.data("state", "cancel");
+  }
+
+  // create a new note
+
+  createNote(e) {
+    var ourNewPost = {
+      'title': jquery__WEBPACK_IMPORTED_MODULE_0___default()(".new-note-title").val(),
+      'content': jquery__WEBPACK_IMPORTED_MODULE_0___default()(".new-note-body").val(),
+      'status': 'publish'
+    };
+    jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
+      beforeSend: xhr => {
+        xhr.setRequestHeader('X-WP-Nonce', universitydata.nonce);
+      },
+      url: universitydata.root_url + "/wp-json/wp/v2/note/",
+      type: "POST",
+      data: ourNewPost,
+      success: response => {
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()(".new-note-title,.new-note-body").val("");
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()(`
+            <li data-id="${response.id}">
+                <input readonly class="note-title-field" value="${response.title.raw}">
+                <span class="edit-note"><i class="fa fa-pencil" aria-hidden='true'></i>Edit</span>
+                <span class="delete-note"><i class="fa fa-trash-o" aria-hidden='true'></i>Delete</span>
+                <textarea readonly class="note-body-field">${response.content.raw}</textarea>
+                <span class="update-note btn btn--blue btn--small"><i class="fa fa-arrow-right" aria-hidden='true'></i>Save</span>
+            </li>
+          `).prependTo("#my-notes").hide().slideDown();
+        console.log("congrat");
+        console.log(response);
+      },
+      error: response => {
+        if (response.responseText == "You have reached your note limit.") {
+          jquery__WEBPACK_IMPORTED_MODULE_0___default()(".note-limit-message").addClass("active");
+        }
+        console.log("sorry");
+        console.log(response);
+      }
+    });
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (myNotes);

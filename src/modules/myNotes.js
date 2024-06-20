@@ -6,13 +6,14 @@ class myNotes {
   }
 
   events() {
-    $(".delete-note").on("click", this.deleteNote);
-    $(".edit-note").on("click", this.editNote.bind(this));
-    $(".update-note").on("click", this.updateNote.bind(this));
+    $("#my-notes").on("click", ".delete-note" ,this.deleteNote);
+    $("#my-notes").on("click", ".edit-note" ,this.editNote.bind(this));
+    $("#my-notes").on("click", ".update-note" ,this.updateNote.bind(this));
+    $(".submit-note").on("click", this.createNote.bind(this));
 
   }
 
-  //Methods will g here
+  //Methods will go here
 
   deleteNote(e) {
     var thisNote = $(e.target).parent('li')
@@ -27,6 +28,10 @@ class myNotes {
         thisNote.slideUp();
         console.log("congrat");
         console.log(response);
+        // if(response.userNoteCount < 5){
+        //   $("./note-linit-message").removeClass("active");
+  
+        // }
       },
       error: (response) => {
         console.log("sorry");
@@ -86,7 +91,6 @@ updateNote(e) {
     thisNote.find(".note-title-field, .note-body-field").removeAttr("readonly").addClass("note-active-field");
     thisNote.find(".update-note").addClass("update-note--visible");
     thisNote.data("state","editable");
-
   };
 
 
@@ -95,10 +99,49 @@ updateNote(e) {
     thisNote.find(".note-title-field, .note-body-field").attr("readonly","readonly").removeClass("note-active-field");
     thisNote.find(".update-note").removeClass("update-note--visible");
     thisNote.data("state","cancel");
-
   }
 
 
+  // create a new note
+
+    createNote(e) {
+
+    var ourNewPost = {
+        'title': $(".new-note-title").val(),
+        'content':$(".new-note-body").val(),
+        'status':'publish',
+    };
+
+    $.ajax({
+      beforeSend: (xhr) =>{
+        xhr.setRequestHeader('X-WP-Nonce',universitydata.nonce);
+      },
+      url: universitydata.root_url + "/wp-json/wp/v2/note/",
+      type: "POST",
+      data: ourNewPost,
+      success: (response) => {
+        $(".new-note-title,.new-note-body").val("");
+        $(`
+            <li data-id="${response.id}">
+                <input readonly class="note-title-field" value="${response.title.raw}">
+                <span class="edit-note"><i class="fa fa-pencil" aria-hidden='true'></i>Edit</span>
+                <span class="delete-note"><i class="fa fa-trash-o" aria-hidden='true'></i>Delete</span>
+                <textarea readonly class="note-body-field">${response.content.raw}</textarea>
+                <span class="update-note btn btn--blue btn--small"><i class="fa fa-arrow-right" aria-hidden='true'></i>Save</span>
+            </li>
+          `).prependTo("#my-notes").hide().slideDown();
+        console.log("congrat");
+        console.log(response);
+      },
+      error: (response) => {
+        if(response.responseText == "You have reached your note limit.") {
+          $(".note-limit-message").addClass("active");
+        }
+        console.log("sorry");
+        console.log(response);
+      },
+    });
+  }
 
 
 
