@@ -4,6 +4,7 @@
 // Add a custom API route
 
 require get_theme_file_path( '/include/search-route.php' );
+require get_theme_file_path('/include/like-route.php');
 
 
 

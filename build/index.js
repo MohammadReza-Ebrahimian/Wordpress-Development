@@ -2066,9 +2066,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/HeroSlider */ "./src/modules/HeroSlider.js");
 /* harmony import */ var _modules_search__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/search */ "./src/modules/search.js");
 /* harmony import */ var _modules_myNotes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/myNotes */ "./src/modules/myNotes.js");
+/* harmony import */ var _modules_like__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/like */ "./src/modules/like.js");
 
 
 // Our modules / classes
+
 
 
 
@@ -2079,6 +2081,7 @@ const mobileMenu = new _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__["default
 const heroSlider = new _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__["default"]();
 const liveSearch = new _modules_search__WEBPACK_IMPORTED_MODULE_3__["default"]();
 const MyNotes = new _modules_myNotes__WEBPACK_IMPORTED_MODULE_4__["default"]();
+const myLikes = new _modules_like__WEBPACK_IMPORTED_MODULE_5__["default"]();
 
 /***/ }),
 
@@ -2151,6 +2154,89 @@ class MobileMenu {
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (MobileMenu);
+
+/***/ }),
+
+/***/ "./src/modules/like.js":
+/*!*****************************!*\
+  !*** ./src/modules/like.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "jquery");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+
+class Like {
+  constructor() {
+    this.events();
+  }
+  events() {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(".like-box").on("click", this.ourClickDispatcher.bind(this));
+  }
+
+  //methods
+
+  ourClickDispatcher(e) {
+    var currentLikeBox = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).closest(".like-box");
+    if (currentLikeBox.attr("data-exists") == "yes") {
+      this.deleteLike(currentLikeBox);
+    } else {
+      this.creatLike(currentLikeBox);
+    }
+  }
+  creatLike(currentLikeBox) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
+      beforeSend: xhr => {
+        xhr.setRequestHeader('x-wp-Nonce', universitydata.nonce);
+      },
+      url: universitydata.root_url + "/wp-json/university/v1/manageLike",
+      type: "POST",
+      data: {
+        'professordId': currentLikeBox.data('professor')
+      },
+      success: response => {
+        currentLikeBox.attr('data-exists', 'yes');
+        var likeCount = parseInt(currentLikeBox.find(".like-count").html(), 10);
+        likeCount++;
+        currentLikeBox.find(".like-count").html(likeCount);
+        currentLikeBox.attr('data-like', response);
+        console.log(response);
+      },
+      error: response => {
+        console.log(response);
+      }
+    });
+  }
+  deleteLike(currentLikeBox) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
+      beforeSend: xhr => {
+        xhr.setRequestHeader('x-wp-Nonce', universitydata.nonce);
+      },
+      url: universitydata.root_url + "/wp-json/university/v1/manageLike",
+      data: {
+        'like': currentLikeBox.attr("data-like")
+      },
+      type: "DELETE",
+      success: response => {
+        currentLikeBox.attr('data-exists', 'no');
+        var likeCount = parseInt(currentLikeBox.find(".like-count").html(), 10);
+        likeCount--;
+        currentLikeBox.find(".like-count").html(likeCount);
+        currentLikeBox.attr('data-like', "");
+        console.log(response);
+      },
+      error: response => {
+        console.log(response);
+      }
+    });
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Like);
 
 /***/ }),
 
@@ -2479,6 +2565,17 @@ class Search {
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
+
+/***/ }),
+
+/***/ "jquery":
+/*!*************************!*\
+  !*** external "jQuery" ***!
+  \*************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = window["jQuery"];
 
 /***/ }),
 
